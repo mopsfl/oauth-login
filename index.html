@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            background: rgb(27, 27, 27);
+            color: white;
+            font-family: Arial;
+        }
+
+        .login-container {
+            width: calc(100vw - 80%);
+            min-width: 250px;
+            position: absolute;
+            left: 50%;
+            bottom: 50%;
+            transform: translate(-50%, -50%);
+            display: grid;
+            gap: 10px;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 5px;
+            border: none;
+            border-radius: 3px;
+        }
+    </style>
+    <script>
+        window.onload = async () => {
+            const params = new Proxy(new URLSearchParams(window.location.search), {
+                get: (searchParams, prop) => searchParams.get(prop),
+            });
+
+            document.querySelector("#discord").addEventListener("click", () => location.replace("http://localhost:6969/v1/login/oauth/discord"))
+            document.querySelector("#roblox").addEventListener("click", () => location.replace("http://localhost:6969/v1/login/oauth/roblox"))
+
+            await fetch("http://localhost:6969/v1/account/get", { credentials: "include" }).then(res => res.json()).then(res => {
+                let username = document.querySelector("#username"),
+                    uid = document.querySelector("#id"),
+                    ppic = document.querySelector("#ppic")
+                if (res.oauth === "discord") {
+                    username.textContent = res.user.username
+                    uid.textContent = res.user.id
+                    ppic.src = `https://cdn.discordapp.com/avatars/${res.user.id}/${res.user.avatar}`
+                    document.querySelector("#logout").style.display = "block"
+                    document.querySelector(".login-container").style.display = "none"
+                } else if (res.oauth === "roblox") {
+                    username.textContent = `${res.user.preferred_username} (${res.user.name})`
+                    uid.textContent = res.user.sub
+                    ppic.src = res.user.picture
+                    document.querySelector("#logout").style.display = "block"
+                    document.querySelector(".login-container").style.display = "none"
+                }
+            })
+
+            document.querySelector("#logout").addEventListener("click", () => location.replace("http://localhost:6969/v1/account/logout"))
+
+            if (params.err && params.errdesc) {
+                window.history.pushState({}, document.title, window.location.pathname);
+                alert(`Error: ${params.err}\nMessage: ${params.errdesc}`)
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="login-container">
+        <button id="discord">Login with Discord</button>
+        <button id="roblox">Login with Roblox</button>
+    </div>
+    <div class="account">
+        <b class="name">Account:</b>
+        <ul>
+            <img id="ppic" alt="Profile Picture" style="width: 50px">
+            <li>Username: <span id="username">N/A</span></li>
+            <li>ID: <span id="id">N/A</span></p>
+        </ul>
+        <button id="logout" style="display:none">logout</button>
+    </div>
+</body>
+
+</html>
