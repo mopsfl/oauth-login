@@ -35,11 +35,12 @@
             const params = new Proxy(new URLSearchParams(window.location.search), {
                 get: (searchParams, prop) => searchParams.get(prop),
             });
+            const api_url = () => (location.hostname == "localhost" && !window.forceProduction) ? "http://localhost:6969/v1/" : "https://api.mopsfl.de/v1/"
 
-            document.querySelector("#discord").addEventListener("click", () => location.replace("http://localhost:6969/v1/login/oauth/discord"))
-            document.querySelector("#roblox").addEventListener("click", () => location.replace("http://localhost:6969/v1/login/oauth/roblox"))
+            document.querySelector("#discord").addEventListener("click", () => location.replace(`${api_url()}login/oauth/discord`))
+            document.querySelector("#roblox").addEventListener("click", () => location.replace(`${api_url()}login/oauth/roblox`))
 
-            await fetch("http://localhost:6969/v1/account/get", { credentials: "include" }).then(res => res.json()).then(res => {
+            await fetch(`${api_url()}account/get`, { credentials: "include" }).then(res => res.json()).then(res => {
                 let username = document.querySelector("#username"),
                     uid = document.querySelector("#id"),
                     ppic = document.querySelector("#ppic")
@@ -58,7 +59,7 @@
                 }
             })
 
-            document.querySelector("#logout").addEventListener("click", () => location.replace("http://localhost:6969/v1/account/logout"))
+            document.querySelector("#logout").addEventListener("click", () => location.replace(`${api_url()}account/logout`))
 
             if (params.err && params.errdesc) {
                 window.history.pushState({}, document.title, window.location.pathname);
