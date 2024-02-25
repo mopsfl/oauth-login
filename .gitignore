@@ -6,3 +6,10 @@ package-lock.json
 package.json
 tsconfig.json
 dist
+bower_components/jquery/src
+bower_components/jquery/*
+!bower_components/jquery/dist
+/temp
+/test
+.github
+.vscode
